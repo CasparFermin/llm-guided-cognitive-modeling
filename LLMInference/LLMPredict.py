@@ -43,7 +43,6 @@ def preprocess_logits_for_metrics(logits, labels, option_ids):
     target_logits = trial_logits.gather(dim=-1, index=trial_labels.unsqueeze(-1))
     nll = -(target_logits - lse)
 
-
     # return option_logits and LSE, and append
     return torch.cat([lse, nll, f_logits], dim=-1).float().detach().cpu()  # [seq, 2+n_options]
 
@@ -121,7 +120,7 @@ if __name__=="__main__":
     print(f"Running Inference on the {FineTuned} Model!")
 
     # ------- Load Model, Tokenizer, and Create SFTConfig -------
-    model_path = "/gpfs/scratch1/shared/cfermin/Models/Qwen3-Coder-Next-Merged"
+    model_path = "/path/to/your/Models/Qwen3-Coder-Next-Merged"
 
     tokenizer = AutoTokenizer.from_pretrained(
         model_path,
@@ -140,7 +139,7 @@ if __name__=="__main__":
         {'name': 'HSa', 'experiment': 'exp0', 'split': 'OOD'},
         {'name': 'CB', 'experiment': 'exp0', 'split': 'OOD'},
     ]
-    data_path = "/gpfs/scratch1/shared/cfermin/Data/"
+    data_path = "/path/to/your/Data/"
 
     apply_liger_kernel_to_qwen3_moe(
         rope=True,
@@ -264,5 +263,6 @@ if __name__=="__main__":
         logits_df = pd.DataFrame(logits_rows)
         logits_df.to_csv(f"{data_path}Results/{FineTuned}/{exp['name']}_{exp['experiment']}.csv", index=False)
         print("Data Process Time:", time.time() - data_proc_time)
+    
     # store total results
     pd.DataFrame(tot_results, columns=['name', 'experiment', 'n-par', 'test_time', 'test_nll']).to_csv(f"{data_path}Results/{FineTuned}/LLMPredict_summary.csv", index=False)

@@ -5,7 +5,7 @@ checkpoint_interval: 30
 # LLM configuration
 llm:
   models:
-    - name: "/gpfs/scratch1/shared/cfermin/Models/Qwen3-Coder-Next-Merged"
+    - name: "Path/to/your/Models/Qwen3-Coder-Next-Merged"
       api_base: "http://localhost:11434/v1"   # vLLM server port
     
   temperature: 0.85

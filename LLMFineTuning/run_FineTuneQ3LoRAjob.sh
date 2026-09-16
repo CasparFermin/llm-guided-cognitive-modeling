@@ -6,14 +6,8 @@
 #SBATCH --output=results/%x_%j.log  # log file
 #SBATCH --error=error/%x_%j.txt     # error file
 
-# load required year module
-module load 2025
-
-# load python module
-module load Python/3.13.1-GCCcore-14.2.0
-
-# load CUDA for HPC
-module load NVHPC/25.3-CUDA-12.8.0
+# load module
+module load 2025 Python/3.13.1-GCCcore-14.2.0 NVHPC/25.3-CUDA-12.8.0
 
 # load environemtn
 source FT/bin/activate
@@ -22,4 +16,4 @@ export HF_ENABLE_PARALLEL_LOADING=1
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 # run python file
-python /gpfs/home6/cfermin/Fine-TuneLLM/FineTuneQ3LoRA.py
+python LLMFineTuning/FineTuneQ3LoRA.py

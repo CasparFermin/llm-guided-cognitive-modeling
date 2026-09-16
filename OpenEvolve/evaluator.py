@@ -16,10 +16,13 @@ experiments = [
     {'name': 'DB', 'experiment': 'exp0', 'num_options': 4},
     {'name': 'HSo', 'experiment': 'exp0', 'num_options': 2},
     {'name': 'HW', 'experiment': 'exp0', 'num_options': 2}
-]
-data_path = "/gpfs/scratch1/shared/cfermin/Data/"
+] # different names are used here to ensure the LLM cannot get the names of the experiments
 
-TRAIN_DATA = [np.load(f"{data_path}{exp['name']}/proc_Train_{exp['experiment']}.npy") for exp in experiments]
+data_path = "Path/to/your/data/"  # Update this path to your actual data directory
+prog_path = "Path/to/your/programs/"  # Update this path to your actual programs directory
+
+TRAIN_DATA = [np.load(f"{data_path}{exp['name']}/struc_Train_{exp['experiment']}.npy") for exp in experiments]
+
 
 def compute_source_complexity(program_path):
     """Compute a simple AST-based complexity score for the source file."""
@@ -145,7 +148,6 @@ def run_model(program_path, max_eval):
     parameter_count = len(param_bounds)
 
     # compute model complexity
-    # model_complexity = 2e-9 * (source_complexity ** 2) + 2e-4 * (parameter_count ** 2)
     model_complexity = float(source_complexity + (parameter_count * 150))
 
     # construct the model
@@ -181,7 +183,7 @@ def run_model(program_path, max_eval):
             param_init = np.array([init_param_dict[k] for k in param_keys], dtype=np.float64)
 
             # run optimization of trainable parameters
-            result = minimize(
+            minimize(
                 evalModel,
                 x0=param_init,
                 args=(train_data, num_options, param_keys, model),
@@ -385,4 +387,4 @@ def evaluate_stage2(program_path):
     return evaluate(program_path, 20, 2)
 
 if __name__ == "__main__":
-    print(evaluate_stage2("OpEvProg6/initial_program.py"))
+    print(evaluate_stage2(f"{prog_path}initial_program.py")) # just for testing, the other print statements are also purely for testing purposes

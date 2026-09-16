@@ -1,6 +1,6 @@
 import torch
 from trl import SFTTrainer, SFTConfig
-from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig#, EarlyStoppingCallback
+from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig
 from peft import LoraConfig, get_peft_model
 from liger_kernel.transformers import apply_liger_kernel_to_qwen3_moe
 import pandas as pd
@@ -73,8 +73,8 @@ def get_dataset(df):
     return dataset
 
 # ---------- DEFINE CONFIGURATIONS ----------
-model_path = "/gpfs/scratch1/shared/cfermin/Models/Qwen3-Coder-Next"
-data_path = "/gpfs/scratch1/shared/cfermin/Data/"
+model_path = "/path/to/your/Models/Qwen3-Coder-Next"
+data_path = "/path/to/your/Data/"
 max_seq_length = 17555 # Adjust based on your needs
 seed=3407
 
@@ -141,15 +141,11 @@ model = AutoModelForCausalLM.from_pretrained(
 
 # ---------- LOAD DATA ----------
 experiments = [
-    {'name': 'HSo', 'experiment': 'exp0', 'split': 'Train'},
-    {'name': 'HW', 'experiment': 'exp0', 'split': 'Train'},
     {'name': 'TB', 'experiment': 'exp1', 'split': 'Train'},
     {'name': 'TB', 'experiment': 'exp2', 'split': 'Train'},
+    {'name': 'HSo', 'experiment': 'exp0', 'split': 'Train'},
+    {'name': 'HW', 'experiment': 'exp0', 'split': 'Train'},
     {'name': 'DB', 'experiment': 'exp0', 'split': 'Train'},
-    # {'name': 'HF', 'experiment': 'exp0', 'split': 'OOD'},
-    # {'name': 'HSa', 'experiment': 'exp0', 'split': 'OOD'},
-    # {'name': 'CB', 'experiment': 'exp0', 'split': 'OOD'},
-    # {'name': 'MF', 'experiment': 'exp0', 'split': 'OOD'},
 ]
 
 train_dats = []
@@ -235,12 +231,11 @@ trainer = SFTTrainer(
 )
 
 # start training process
-trainer.train(resume_from_checkpoint=f"{data_path}FineTune/checkpoint-40")
+trainer.train(resume_from_checkpoint=f"{data_path}FineTuning/checkpoint-40")
 
 # Run final evaluation on last LoRA state and store it
 trainer.evaluate()
 model.save_pretrained(f"{data_path}FineTuned/Final_LoRA")
 
 # store log history
-pd.DataFrame(trainer.state.log_history).to_csv(f"{data_path}FineTune/SFTTrainer_logs.csv", index=False)
-
+pd.DataFrame(trainer.state.log_history).to_csv(f"{data_path}FineTuning/SFTTrainer_logs.csv", index=False)

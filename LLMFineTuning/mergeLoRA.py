@@ -11,9 +11,9 @@ torch.set_num_threads(optimized_threads)
 torch.set_num_interop_threads(2)
 
 # ---------- PATHS ----------
-base_model_path = "/gpfs/scratch1/shared/cfermin/Models/Qwen3-Coder-Next"
-lora_adapter_path = "/gpfs/scratch1/shared/cfermin/Data/FineTune/checkpoint-40/"
-merged_output_path = "/gpfs/scratch1/shared/cfermin/Models/Qwen3-Coder-Next-Merged"
+base_model_path = "/path/to/your/Models/Qwen3-Coder-Next"
+lora_adapter_path = "/path/to/your/Data/FineTune/checkpoint-40/"
+merged_output_path = "/path/to/your/Models/Qwen3-Coder-Next-Merged"
 
 
 # ---------- LOAD TOKENIZER ----------
