@@ -14,7 +14,7 @@ Steps 2, 3, and 4 were performed on a Snellius node with H100s; the paths have t
 
 The other steps can be readily performed using the provided files, although the analysis does assume you have the dataset containing the predictions on the test set of all 5 models.
 
-The analysis files have functional references to [the test-set logit files]([huggingface.co/datasets/CasparFermin/tree/main](https://huggingface.co/datasets/CasparFermin/llm-guided-modelling-results/tree/main)) to reproduce the exact results of the paper.
+The analysis files have functional references to the [test-set logit files](https://huggingface.co/datasets/CasparFermin/llm-guided-modelling-results/tree/main) to reproduce the exact results of the paper.
 
 Moreover, the fine-tuning can also be skipped, as the LoRAs can be [downloaded](https://huggingface.co/CasparFermin/Qwen3-Coder-Next-LoRA/tree/main) to be merged with [Qwen3-Coder-Next 80B A3B](https://huggingface.co/Qwen/Qwen3-Coder-Next).
 
