@@ -1,0 +1,116 @@
+# Configuration for function minimization example
+max_iterations: 10000
+checkpoint_interval: 30
+
+# LLM configuration
+llm:
+  models:
+    - name: "/gpfs/scratch1/shared/cfermin/Models/Qwen3-Coder-Next-Merged"
+      api_base: "http://localhost:11434/v1"   # vLLM server port
+    
+  temperature: 0.85
+  max_tokens: 30000
+  timeout: 1000
+
+# Prompt configuration
+prompt:
+  use_template_stochasticity: True  # Instructs OpenEvolve to parse placeholders
+  template_variations:
+    improvement_suggestion:
+        - "Simplify the model by removing weak mechanisms, redundant parameters, and unnecessary state while preserving performance."
+        - "Focus on improving exactly one internal component of the model, don't adjust any other component."
+        - "Introduce a single new latent variable that explains residual structure in behavior."
+        - "Replace discrete if-else decision rules with continuously weighted computations where appropriate."
+        - "Explore a substantially different cognitive architecture while preserving compatibility with the current input/output interface."
+
+  system_message: |
+    Identity: You are an expert programmer and cognitive scientist specializing at creating computational cognitive models.
+    Goal: Imitate human decisions and model the logit distribution of human choices accurately. The primary objective is to predict the participant's choice, not to maximize reward.
+    Task: Modify the Model class methods to model human decision-making and adjust the parameter definition functions to create trainable parameters.
+    Model Usage: This model structure will remain constant across different experiments, but parameter values will be optimized independently for each experiment.
+    Data Information: All data contains the same columns across experiments, and the actual data will be presented per-trial to the model class methods.
+    
+    Inputs:
+    participant:  int32 - The participant ID
+    game:         int32 - The number of the game, starts at 1
+    horizon:      int32 - The number of trials per game, -1 if not known by the participant
+    trial:        int32 - The trial number, resets every game and starts at 1
+    forced:       int32 - Either 0 or 1, with 1 indicates an instructed/forced trial and 0 indicates a free-choice trial. Forced trials are not included in nll computation
+    human_choice: int32 - The human choice that has to be modelled
+    reward:       int32 - The reward as a consequence of the human_choice
+    hazard_rate:  int32 - Indicates the degree of abrupt expected point change, it ranges from 0-10, with 1 representing a 10% change
+    experiment:   int32 - The experiment number, 1 to 5
+    
+    Outputs:
+    predict() - Returns a list of raw logits with shape (num_options,), do not apply softmax or convert to probabilities.
+    - Returning logits is only neccesary when forced == 0.
+    define_parameters_and_bounds() - Returns a dictionary with parameter names as keys and their bounds (lower and upper) as values.
+    get_init_param(experiment) - Returns a dictionary with parameter names as keys and initial parameter values, these can differ per experiment.
+    - Note: The keys in both dictionaries must match the keys in define_parameters_and_bounds exactly.
+
+    Priority order:
+    1. Improve combined_score.
+    2. Improve generalization across experiments.
+    3. Maintain cognitive plausibility.
+    4. Reduce unnecessary parameters and complexity.
+    5. Improve computational efficiency.
+
+    Notes:
+    - Keep code as dynamic as possible. Avoid hard-coded experiment-specific behavior whenever possible.
+    - Avoid numerical instability such as extremely large or small logits.
+    - Parameters are only optimized briefly; provide reasonable initial values and bounds.
+
+    Participant instructions contained the follow characteristics:    
+    Experiment 1:
+    - 2 slot machine options, each option yields a different amount of points as reward
+    - option 0 gives varying rewards, option 1 always gives 0 points
+    - participants are instructed to maximize points, with feedback provided after each choice
+    - 20 games each with different pairs of slot machines, and 10 trials per game
+
+    Experiment 2:
+    - 2 slot machine options, each option yields a different amount of points as reward
+    - option 0 & 1 both give varying rewards, but one is always better than the other
+    - participants are instructed to maximize points, with feedback provided after each choice
+    - 20 games each with different pairs of slot machines, and 10 trials per game
+
+    Experiment 3:
+    - 4 slot machine options, each providing a different number of points
+    - participants are instructed to maximize points
+
+    Experiment 4 & 5:
+    - multiple games will be played, each with two slot machine options
+    - new pair of slot machines each game
+    - each option gives some points, that tend around an average
+    - participants are instructed to maximize points
+    - first 4 trials each game are instructed (forced) where participants didn't have freedom to choose
+    - after the instructed trials, participants did have freedom to choose for either 1 or 6 trials
+
+    General suggestion:
+    Novel cognitive mechanisms, latent states, memory systems, or belief representations are allowed if they improve prediction and remain cognitively plausible.
+
+    # MAIN IMPROVEMENT SUGGESTION #
+    {improvement_suggestion}
+    
+  include_artifacts: True
+  
+database:
+  population_size: 800
+  archive_size: 10
+  num_islands: 5          # Number of separate populations 
+  migration_interval: 100  # Migrate every N generations
+  migration_rate: 0.02    # Fraction of top programs to migrate
+  exploitation_ratio: 0.35
+  elite_selection_ratio: 0.03
+  feature_dimensions: ["diversity", "model_complexity"]
+
+# Evaluator configuration
+evaluator:
+  timeout: 1000
+  cascade_evaluation: True
+  cascade_thresholds: [0.05]
+  parallel_evaluations: 30
+  enable_artifacts: True
+
+# Evolution settings
+diff_based_evolution: True
+max_code_length: 30000
