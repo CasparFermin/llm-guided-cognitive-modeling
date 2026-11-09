@@ -106,12 +106,12 @@ for _, exp in experiments.iterrows():
     clean_struc = pd.DataFrame({
         'participant':  struc['participant'].astype('int32'),
         'game':         (1 + struc['task']).astype('int32'),
-        'horizon':      struc['horizon'].astype('int32') if name in ['HorizonSade', 'HorizonSomer', 'HorizonFeng', 'HorizonWaltz'] else -1
+        'horizon':      struc['horizon'].astype('int32') if name in ['HorizonSade', 'HorizonSomer', 'HorizonFeng', 'HorizonWaltz'] else -1,
         'trial':        (1 + struc['trial']).astype('int32'),
         'forced':       struc['forced'].astype('int32') if 'forced' in struc.columns else 0,
         'human_choice': struc['choice'].astype('int32') if 'choice' in struc.columns else 0,
         'reward':       struc['reward'].astype('int32') if 'reward' in struc.columns else 0,
-        'hazard_rate':  (struc['hazard_rate'] * 10 if name == 'ChangingBandit' else 0).astype('float64'),
+        'hazard_rate':  (struc['hazard_rate'] * 10 if name == 'ChangingBandit' else 0).astype('float64')
     })
 
     # Dynamically resolve max horizon lengths for contextual tasks
